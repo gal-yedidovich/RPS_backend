@@ -1,0 +1,14 @@
+{
+  "101": {
+    "player1": 100,
+    "player2": 200,
+    "turn": 100,
+    "board": {
+      "00" : {
+        "type" : "empty|rock|paper|scissors|flag|trap",
+        "owner": 100,
+        "isHidden": true
+      }
+    }
+  }
+}
