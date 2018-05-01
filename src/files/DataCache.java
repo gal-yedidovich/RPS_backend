@@ -59,7 +59,7 @@ public class DataCache {
         return -1;
     }
 
-    public static void move(int gameId, int token, JSONObject from, JSONObject to) throws JSONException {
+    public static void move(JSONObject from, JSONObject to) throws JSONException {
         to.put("type", from.getString("type"))
                 .put("owner", from.getInt("owner"))
                 .put("isHidden", from.getBoolean("isHidden"));
@@ -113,5 +113,49 @@ public class DataCache {
         }
 
         return result; //return final result
+    }
+
+    public static int battle(int gameId, JSONObject from, JSONObject to) throws JSONException {
+        String target = to.getString("type");
+
+        Types attacker = Types.valueOf(from.getString("type"));
+        if (attacker == Types.flag) throw new RuntimeException("flag/trap cannot attack");
+
+        int result = attacker.attack(Types.valueOf(target));
+        switch (result) {
+            case 1: //won - move to target
+                move(from, to);
+                break;
+            case -1: //lost - kill attacker
+                from.put("type", "none")
+                        .put("owner", -1)
+                        .put("isHidden", false);
+                break;
+            case 0://tie - draw
+                getGame(gameId).put("draw" , new JSONObject()); //init draw object
+                break;
+        }
+
+        return result;
+    }
+
+    enum Types {
+        flag, trap, rock, paper, scissors;
+
+
+        int attack(Types t) {
+            if (t == flag) return 1;
+            if (t == trap) return -1;
+
+            int diff = this.ordinal() - t.ordinal();
+
+            if (diff % 2 == 0) return diff / -2;
+            else return diff;
+            //won : +1 -2
+            //tie : 0
+            //lost: -1 +2
+        }
+
+
     }
 }

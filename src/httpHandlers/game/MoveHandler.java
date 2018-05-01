@@ -33,8 +33,8 @@ public class MoveHandler implements HttpHandler {
                             to_col = req_to.getInt("col");
 
                     //if player 1 - rotate positions
-                    if(gameJson.getInt("player1") == token){
-                        int rotation = DataCache.BOARD_SIZE-1;
+                    if (gameJson.getInt("player1") == token) {
+                        int rotation = DataCache.BOARD_SIZE - 1;
                         from_row = rotation - from_row;
                         from_col = rotation - from_col;
                         to_row = rotation - to_row;
@@ -50,19 +50,36 @@ public class MoveHandler implements HttpHandler {
                         System.out.println(targetOwner + " - " + token);
                         throw new RuntimeException("invalid target, can't move on to own RPS");
                     } else if (targetOwner == -1) { //empty -> move
-                        DataCache.move(gameId, token, from, to);
+                        DataCache.move(from, to);
+                        gameJson.put("turn", receiverToken); //toggle move
                     } else { //battle
+
+                        if (to.getString("type").equals("flag")) { //game over
+                            int winner = from.getInt("owner");
+                            gameJson.put("winner", winner);
+                            responseBody.put("winner", winner);
+                            reqJson.put("winner", winner);
+                            gameJson.put("turn", -1); //no more turns
+                            System.out.println("game over, " + winner + " won");
+                        } else {
+                            gameJson.put("turn", receiverToken); //toggle move
+                        }
+
                         if (to.getBoolean("isHidden"))
                             responseBody.put("s_type", to.getString("type")); //add type to response
 
                         if (from.getBoolean("isHidden"))
                             reqJson.put("s_type", from.getString("type")); //add type before passing data to opponent
+
+                        int result = DataCache.battle(gameId, from, to); //resolve battle and put result
+                        responseBody.put("battle", result);
+                        reqJson.put("battle", result);
                     }
 
                     //pass data & respond
                     Network.Game.unicast(receiverToken, reqJson.toString());
                     CommonHandler.resSuccess(request, responseBody);
-                    gameJson.put("turn", receiverToken); //toggle move
+
 
                 } else { //invalid token, return with error response
                     System.out.println("error - invalid token at game: " + gameId);
