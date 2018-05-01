@@ -31,11 +31,10 @@ public class DataCache {
     }
 
     public static JSONObject getDraw(int gameId) throws JSONException {
-        JSONObject game = getGame(gameId);
-        JSONObject draw = game.optJSONObject("draw");
+        JSONObject game = getGame(gameId),
+                draw = game.optJSONObject("draw");
 
         if (draw == null) draw = game.put("draw", new JSONObject()).getJSONObject("draw");
-
         return draw;
     }
 
@@ -74,7 +73,6 @@ public class DataCache {
 
     public static JSONObject randomRPS2(int gameId) throws JSONException {
         return randomRps(getGame(gameId), false);
-
     }
 
     private static JSONObject randomRps(JSONObject game, boolean up) throws JSONException {
@@ -119,7 +117,7 @@ public class DataCache {
         String target = to.getString("type");
 
         Types attacker = Types.valueOf(from.getString("type"));
-        if (attacker == Types.flag) throw new RuntimeException("flag/trap cannot attack");
+        if (attacker == Types.flag || attacker == Types.trap) throw new RuntimeException("flag/trap cannot attack");
 
         int result = attacker.attack(Types.valueOf(target));
         switch (result) {
@@ -132,7 +130,7 @@ public class DataCache {
                         .put("isHidden", false);
                 break;
             case 0://tie - draw
-                getGame(gameId).put("draw" , new JSONObject()); //init draw object
+                getGame(gameId).put("draw", new JSONObject()); //init draw object
                 break;
         }
 
@@ -140,8 +138,7 @@ public class DataCache {
     }
 
     enum Types {
-        flag, trap, rock, paper, scissors;
-
+        flag, trap, rock, paper, scissors; //used from Types.valueOf(target);
 
         int attack(Types t) {
             if (t == flag) return 1;
@@ -151,11 +148,6 @@ public class DataCache {
 
             if (diff % 2 == 0) return diff / -2;
             else return diff;
-            //won : +1 -2
-            //tie : 0
-            //lost: -1 +2
         }
-
-
     }
 }

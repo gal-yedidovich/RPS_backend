@@ -21,9 +21,7 @@ public enum Network {
             //broadcast to lobby
             try {
                 String msg = new JSONObject().put("type", "user_left").put("token", token).toString();
-
                 broadcast(-1, msg);
-
             } catch (JSONException e) {
                 e.printStackTrace();
             }
@@ -41,7 +39,7 @@ public enum Network {
             ;
         }
         try {
-            byte[] buffer = new byte[4];
+            var buffer = new byte[4];
             client.getInputStream().read(buffer);
 
             int token = ByteBuffer.wrap(buffer).order(ByteOrder.LITTLE_ENDIAN).getInt();
@@ -54,7 +52,7 @@ public enum Network {
     }
 
     public void unRegisterClient(int token) {
-        Socket s = clients.get(token);
+        var s = clients.get(token);
         if (s != null && !s.isClosed()) {
             try {
                 s.close();
@@ -68,8 +66,8 @@ public enum Network {
 
     public void unicast(int token, String msg) {
         try {
-            byte[] data = msg.getBytes();
-            int size = data.length;
+            var data = msg.getBytes();
+            var size = data.length;
             OutputStream out = clients.get(token).getOutputStream();
             out.write(size); //send size
             out.write(data); //send data
