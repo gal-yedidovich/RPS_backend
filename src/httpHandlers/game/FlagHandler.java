@@ -36,6 +36,8 @@ public class FlagHandler implements HttpHandler {
             }
         } catch (JSONException e) {
             e.printStackTrace();
+        } finally {
+            request.close();
         }
     }
 }

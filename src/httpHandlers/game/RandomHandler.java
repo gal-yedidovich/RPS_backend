@@ -33,6 +33,8 @@ public class RandomHandler implements HttpHandler {
         } catch (JSONException e) {
             e.printStackTrace();
             request.close();
+        } finally {
+            request.close();
         }
     }
 }

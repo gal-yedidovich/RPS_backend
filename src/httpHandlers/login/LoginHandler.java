@@ -47,6 +47,8 @@ public class LoginHandler implements HttpHandler {
                 }
             } catch (JSONException e) {
                 e.printStackTrace();
+            } finally {
+                request.close();
             }
         }
     }

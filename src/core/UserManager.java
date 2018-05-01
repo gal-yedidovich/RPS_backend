@@ -13,12 +13,8 @@ public enum UserManager {
         cache.put(token, user);
     }
 
-    public User opt(int token) {
+    public User get(int token) {
         return cache.get(token);
-    }
-
-    public HashMap<Integer, User> getUserCache() {
-        return cache;
     }
 
     public boolean tokenExists(int token) {

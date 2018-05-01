@@ -38,7 +38,7 @@ public class AllPlayersHandler implements HttpHandler {
                     for (int t : Network.Lobby.GetTokensSet()) {
                         if (t == myToken) continue; //skip self
 
-                        User current = UserManager.instance.opt(t);
+                        User current = UserManager.instance.get(t);
                         if (current != null)
                             arr.put(new JSONObject()
                                     .put("name", current.getName())
@@ -53,6 +53,8 @@ public class AllPlayersHandler implements HttpHandler {
                 request.close();
             } catch (JSONException e) {
                 e.printStackTrace();
+            } finally {
+                request.close();
             }
         }
     }

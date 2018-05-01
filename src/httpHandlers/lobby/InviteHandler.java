@@ -22,7 +22,7 @@ public class InviteHandler implements HttpHandler {
                         targetToken = reqJson.getInt("target_token");
 
                 if ("invite".equals(reqJson.optString("req_type"))) { //user invite to play
-                    String inviterName = UserManager.instance.opt(senderToken).getName();
+                    String inviterName = UserManager.instance.get(senderToken).getName();
 
                     //generate game id
                     int gameNum = new Random().nextInt(1_000_000) + 100_000;

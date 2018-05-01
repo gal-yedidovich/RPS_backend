@@ -97,6 +97,8 @@ public class MoveHandler implements HttpHandler {
             } catch (JSONException e1) {
                 e1.printStackTrace();
             }
+        } finally {
+            request.close();
         }
     }
 }

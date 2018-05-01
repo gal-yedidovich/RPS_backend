@@ -21,9 +21,7 @@ public class CommonHandler {
 
     public static void resSuccess(HttpExchange request, JSONObject success) throws IOException {
         byte[] response = success.toString().getBytes();
-        request.sendResponseHeaders(200, response.length);
-        request.getResponseBody().write(response);
-        request.close();
+        response(request, response);
     }
 
     public static void resSuccess(HttpExchange request) throws IOException, JSONException {
@@ -35,9 +33,12 @@ public class CommonHandler {
                 .put("success", false)
                 .put("msg", msg)
                 .toString().getBytes();
+        response(request, response);
+    }
 
-        request.sendResponseHeaders(400, response.length);
-        request.getResponseBody().write(response);
+    private static void response(HttpExchange request, byte[] body) throws IOException {
+        request.sendResponseHeaders(200, body.length);
+        request.getResponseBody().write(body);
         request.close();
     }
 }

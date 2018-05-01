@@ -114,12 +114,8 @@ public class DataCache {
     }
 
     public static int battle(int gameId, JSONObject from, JSONObject to) throws JSONException {
-        String target = to.getString("type");
+        int result = resolveBattle(from.getString("type"), to.getString("type"));
 
-        Types attacker = Types.valueOf(from.getString("type"));
-        if (attacker == Types.flag || attacker == Types.trap) throw new RuntimeException("flag/trap cannot attack");
-
-        int result = attacker.attack(Types.valueOf(target));
         switch (result) {
             case 1: //won - move to target
                 move(from, to);
@@ -135,6 +131,13 @@ public class DataCache {
         }
 
         return result;
+    }
+
+    public static int resolveBattle(String type1, String type2) {
+        Types t1 = Types.valueOf(type1);
+        if (t1 == Types.flag || t1 == Types.trap) throw new RuntimeException("flag/trap cannot attack");
+
+        return t1.attack(Types.valueOf(type2));
     }
 
     enum Types {
