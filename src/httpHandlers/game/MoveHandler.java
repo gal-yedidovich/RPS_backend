@@ -2,7 +2,7 @@ package httpHandlers.game;
 
 import com.sun.net.httpserver.HttpExchange;
 import com.sun.net.httpserver.HttpHandler;
-import files.DataCache;
+import core.DataCache;
 import httpHandlers.CommonHandler;
 import networking.Network;
 import org.json.JSONException;
@@ -66,14 +66,18 @@ public class MoveHandler implements HttpHandler {
                         }
 
                         if (to.getBoolean("isHidden"))
-                            responseBody.put("s_type", to.getString("type")); //add type to response
+                            responseBody.put("s_type", to.getString("type")).put("isHidden",false); //add type to response
 
                         if (from.getBoolean("isHidden"))
-                            reqJson.put("s_type", from.getString("type")); //add type before passing data to opponent
+                            reqJson.put("s_type", from.getString("type")).put("isHidden",false); //add type before passing data to opponent
 
                         int result = DataCache.battle(gameId, from, to); //resolve battle and put result
                         responseBody.put("battle", result);
                         reqJson.put("battle", result);
+
+                        if(result == 0) { //draw
+                            DataCache.getDraw(gameId).put("attacker", token); //set sender as attacker
+                        }
                     }
 
                     //pass data & respond

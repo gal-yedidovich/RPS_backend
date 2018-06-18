@@ -2,10 +2,10 @@ package httpHandlers.lobby;
 
 import com.sun.net.httpserver.HttpExchange;
 import com.sun.net.httpserver.HttpHandler;
-import files.DataCache;
-import networking.Network;
+import core.DataCache;
 import core.UserManager;
 import httpHandlers.CommonHandler;
+import networking.Network;
 import org.json.JSONException;
 import org.json.JSONObject;
 

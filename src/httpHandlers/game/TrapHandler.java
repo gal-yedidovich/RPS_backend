@@ -2,7 +2,7 @@ package httpHandlers.game;
 
 import com.sun.net.httpserver.HttpExchange;
 import com.sun.net.httpserver.HttpHandler;
-import files.DataCache;
+import core.DataCache;
 import httpHandlers.CommonHandler;
 import org.json.JSONException;
 import org.json.JSONObject;

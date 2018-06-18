@@ -1,20 +1,14 @@
 import com.sun.net.httpserver.HttpServer;
-import files.DataCache;
 import httpHandlers.game.*;
-import httpHandlers.login.*;
+import httpHandlers.lobby.AllPlayersHandler;
+import httpHandlers.lobby.InviteHandler;
+import httpHandlers.login.LoginHandler;
+import httpHandlers.login.LogoutHandler;
 import networking.Network;
-import httpHandlers.lobby.*;
-import org.json.JSONException;
 
 import java.io.IOException;
-import java.io.InputStream;
-
-
-import java.io.OutputStream;
 import java.net.InetSocketAddress;
 import java.net.ServerSocket;
-import java.net.Socket;
-import java.util.Scanner;
 
 public class Main {
     public static void main(String[] args) {
@@ -36,6 +30,8 @@ public class Main {
             gameServer.createContext("/game/move", new MoveHandler());
             gameServer.createContext("/game/draw", new DrawHandler());
             gameServer.start();
+
+            System.out.println("HTTP server running");
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -44,6 +40,7 @@ public class Main {
         new Thread(() -> {
             try {
                 ServerSocket lobbyServer = new ServerSocket(15001);
+                System.out.println("Lobby socket running");
                 while (true) Network.Lobby.registerClient(lobbyServer.accept());
             } catch (IOException e) {
                 e.printStackTrace();
@@ -54,8 +51,8 @@ public class Main {
         new Thread(() -> {
             try {
                 ServerSocket gameServer = new ServerSocket(15002);
-                while (true)
-                    Network.Game.registerClient(gameServer.accept());
+                System.out.println("Game socket running");
+                while (true) Network.Game.registerClient(gameServer.accept());
             } catch (IOException e) {
                 e.printStackTrace();
             }

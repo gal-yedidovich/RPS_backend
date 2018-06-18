@@ -4,9 +4,6 @@ import com.sun.net.httpserver.HttpExchange;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 
 public class CommonHandler {

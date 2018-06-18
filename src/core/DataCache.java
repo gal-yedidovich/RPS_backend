@@ -1,10 +1,10 @@
-package files;
+package core;
 
-import javafx.util.Pair;
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Random;
 
 public class DataCache {
@@ -133,24 +133,41 @@ public class DataCache {
         return result;
     }
 
-    public static int resolveBattle(String type1, String type2) {
-        Types t1 = Types.valueOf(type1);
-        if (t1 == Types.flag || t1 == Types.trap) throw new RuntimeException("flag/trap cannot attack");
+    public static int resolveBattle(String attacker, String target) {
+        if (attacker.equalsIgnoreCase("flag")
+                || attacker.equalsIgnoreCase("trap")) throw new RuntimeException("flag/trap cannot attack");
 
-        return t1.attack(Types.valueOf(type2));
+        return Results.instance.possibilities.get(attacker.toLowerCase() + "-" + target.toLowerCase());
     }
 
-    enum Types {
-        flag, trap, rock, paper, scissors; //used from Types.valueOf(target);
+    private enum Results {
+        instance;
 
-        int attack(Types t) {
-            if (t == flag) return 1;
-            if (t == trap) return -1;
+        private HashMap<String, Integer> possibilities = new HashMap<>();
 
-            int diff = this.ordinal() - t.ordinal();
+        Results() {
+            //flag
+            possibilities.put("rock-flag", 1);
+            possibilities.put("paper-flag", 1);
+            possibilities.put("scissors-flag", 1);
+            //trap
+            possibilities.put("rock-trap", -1);
+            possibilities.put("paper-trap", -1);
+            possibilities.put("scissors-trap", -1);
+            //RPS
+            //draw
+            possibilities.put("rock-rock", 0);
+            possibilities.put("paper-paper", 0);
+            possibilities.put("scissors-scissors", 0);
+            //win
+            possibilities.put("rock-scissors", 1);
+            possibilities.put("paper-rock", 1);
+            possibilities.put("scissors-paper", 1);
+            //lose
+            possibilities.put("rock-paper", -1);
+            possibilities.put("paper-scissors", -1);
+            possibilities.put("scissors-rock", -1);
 
-            if (diff % 2 == 0) return diff / -2;
-            else return diff;
         }
     }
 }

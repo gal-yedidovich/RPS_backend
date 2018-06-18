@@ -2,10 +2,10 @@ package httpHandlers.login;
 
 import com.sun.net.httpserver.HttpExchange;
 import com.sun.net.httpserver.HttpHandler;
-import networking.Network;
 import core.UserManager;
 import httpHandlers.CommonHandler;
 import models.User;
+import networking.Network;
 import org.json.JSONException;
 import org.json.JSONObject;
 

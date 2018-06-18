@@ -35,7 +35,7 @@ public enum Network {
     }
 
     public void registerClient(Socket client) {
-        if(this == Game){
+        if (this == Game) {
             ;
         }
         try {
