@@ -30,8 +30,6 @@ public class Main {
             gameServer.createContext("/game/move", new MoveHandler());
             gameServer.createContext("/game/draw", new DrawHandler());
             gameServer.start();
-
-            System.out.println("HTTP server running");
         } catch (IOException e) {
             e.printStackTrace();
         }

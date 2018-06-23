@@ -126,7 +126,7 @@ public class DataCache {
                         .put("isHidden", false);
                 break;
             case 0://tie - draw
-                getGame(gameId).put("draw", new JSONObject()); //init draw object
+                getGame(gameId).put("draw", new JSONObject().put("to", to).put("from", from)); //init draw object
                 break;
         }
 

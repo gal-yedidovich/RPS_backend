@@ -5,7 +5,6 @@ import com.sun.net.httpserver.HttpHandler;
 import core.DataCache;
 import httpHandlers.CommonHandler;
 import networking.Network;
-import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.IOException;
@@ -19,10 +18,12 @@ public class ReadyHandler implements HttpHandler {
             int token = reqJson.getInt("token"),
                     gameId = reqJson.getInt("gameId");
 
-            Network.Game.unicast(DataCache.getOpponentToken(gameId, token), new JSONObject().put("type", "opponent ready"));
+            int r = DataCache.getOpponentToken(gameId, token);
+            JSONObject d = new JSONObject().put("type", "opponent ready");
+            Network.Game.unicast(r, d);
 
             CommonHandler.resSuccess(request, new JSONObject().put("success", true).put("turn", DataCache.getGame(gameId).getInt("turn")));
-        } catch (JSONException e) {
+        } catch (Exception e) {
             e.printStackTrace();
         } finally {
             request.close();

@@ -15,6 +15,14 @@ import java.util.Random;
 public class LoginHandler implements HttpHandler {
     @Override
     public void handle(HttpExchange request) throws IOException {
+        if(request.getRequestMethod().equals("GET")){
+            try {
+                CommonHandler.resSuccess(request);
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+        }
+
         if (request.getRequestMethod().equals("POST")) {
             try {
                 JSONObject json = CommonHandler.readRequestJson(request);

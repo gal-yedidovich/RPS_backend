@@ -16,9 +16,11 @@ public class MoveHandler implements HttpHandler {
         try {
             JSONObject reqJson = CommonHandler.readRequestJson(request);
             int gameId = reqJson.getInt("gameId");
+            int token = reqJson.getInt("token");
+            System.out.println(token + " has moved\n\t" + reqJson);
+
             JSONObject gameJson = DataCache.getGame(gameId);
 
-            int token = reqJson.getInt("token");
             if (gameJson.getInt("turn") == token) { //if player's turn - execute
                 int receiverToken = DataCache.getOpponentToken(gameId, token);
 
@@ -65,17 +67,21 @@ public class MoveHandler implements HttpHandler {
                             gameJson.put("turn", receiverToken); //toggle move
                         }
 
-                        if (to.getBoolean("isHidden"))
-                            responseBody.put("s_type", to.getString("type")).put("isHidden",false); //add type to response
+                        if (to.getBoolean("isHidden")) {
+                            to.put("isHidden", false);
+                            responseBody.put("s_type", to.getString("type")); //add type to response
+                        }
 
-                        if (from.getBoolean("isHidden"))
-                            reqJson.put("s_type", from.getString("type")).put("isHidden",false); //add type before passing data to opponent
+                        if (from.getBoolean("isHidden")) {
+                            from.put("isHidden", false);
+                            reqJson.put("s_type", from.getString("type")); //add type before passing data to opponent
+                        }
 
                         int result = DataCache.battle(gameId, from, to); //resolve battle and put result
                         responseBody.put("battle", result);
                         reqJson.put("battle", result);
 
-                        if(result == 0) { //draw
+                        if (result == 0) { //draw
                             DataCache.getDraw(gameId).put("attacker", token); //set sender as attacker
                         }
                     }
@@ -94,7 +100,7 @@ public class MoveHandler implements HttpHandler {
                 System.out.println("error - token move not at their turn at game: " + gameId);
                 CommonHandler.resError(request, "not your turn");
             }
-        } catch (JSONException e) {
+        } catch (Exception e) {
             e.printStackTrace();
             try {
                 CommonHandler.resError(request, "error");
