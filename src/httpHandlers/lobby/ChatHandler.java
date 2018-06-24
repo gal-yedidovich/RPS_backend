@@ -10,21 +10,21 @@ import org.json.JSONObject;
 import java.io.IOException;
 
 public class ChatHandler implements HttpHandler {
-    @Override
-    public void handle(HttpExchange request) throws IOException {
-        if (request.getRequestMethod().equals("POST")) {
-            try {
-                var reqJson = CommonHandler.readRequestJson(request);
-                var token = reqJson.getInt("token");
-                var msg = reqJson.getString("msg");
+	@Override
+	public void handle(HttpExchange request) throws IOException {
+		if (request.getRequestMethod().equals("POST")) {
+			try {
+				var reqJson = CommonHandler.readRequestJson(request);
+				var token = reqJson.getInt("token");
+				var msg = reqJson.getString("msg");
 
-                CommonHandler.resSuccess(request);
-                Network.Lobby.broadcast(token, new JSONObject()
-                        .put("type", "msg")
-                        .put("msg", msg).toString());
-            } catch (JSONException e) {
-                e.printStackTrace();
-            }
-        }
-    }
+				CommonHandler.resSuccess(request);
+				Network.Lobby.broadcast(token, new JSONObject()
+						.put("type", "msg")
+						.put("msg", msg).toString());
+			} catch (JSONException e) {
+				e.printStackTrace();
+			}
+		}
+	}
 }
