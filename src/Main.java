@@ -1,6 +1,7 @@
 import com.sun.net.httpserver.HttpServer;
 import httpHandlers.game.*;
 import httpHandlers.lobby.AllPlayersHandler;
+import httpHandlers.lobby.ChatHandler;
 import httpHandlers.lobby.InviteHandler;
 import httpHandlers.login.LoginHandler;
 import httpHandlers.login.LogoutHandler;
@@ -19,6 +20,7 @@ public class Main {
             lobbyHttpServer.createContext("/login", new LoginHandler());
             lobbyHttpServer.createContext("/logout", new LogoutHandler());
             lobbyHttpServer.createContext("/lobby/players", new AllPlayersHandler());
+            lobbyHttpServer.createContext("/lobby/chat", new ChatHandler());
             lobbyHttpServer.createContext("/lobby/invite", new InviteHandler());
             lobbyHttpServer.start();
 
