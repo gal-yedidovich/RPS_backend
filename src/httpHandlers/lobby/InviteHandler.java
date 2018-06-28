@@ -6,15 +6,13 @@ import core.DataCache;
 import core.UserManager;
 import httpHandlers.CommonHandler;
 import networking.Network;
-import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.io.IOException;
 import java.util.Random;
 
 public class InviteHandler implements HttpHandler {
 	@Override
-	public void handle(HttpExchange request) throws IOException {
+	public void handle(HttpExchange request) {
 		if (request.getRequestMethod().equals("POST")) {
 			try {
 				JSONObject reqJson = CommonHandler.readRequestJson(request);
@@ -22,7 +20,7 @@ public class InviteHandler implements HttpHandler {
 						targetToken = reqJson.getInt("target_token");
 
 				if ("invite".equals(reqJson.optString("req_type"))) { //user invite to play
-					String inviterName = UserManager.instance.get(senderToken).getName();
+					String senderName = UserManager.instance.get(senderToken).getName();
 
 					//generate game id
 					int gameNum = new Random().nextInt(1_000_000) + 100_000;
@@ -30,7 +28,7 @@ public class InviteHandler implements HttpHandler {
 					//pass invitation to target receiver
 					JSONObject resJson = new JSONObject()
 							.put("type", "invite")
-							.put("sender_name", inviterName)
+							.put("sender_name", senderName)
 							.put("game_id", gameNum)
 							.put("sender_token", senderToken);
 
@@ -63,7 +61,7 @@ public class InviteHandler implements HttpHandler {
 				}
 
 
-			} catch (JSONException e) {
+			} catch (Exception e) {
 				e.printStackTrace();
 			} finally {
 				request.close();

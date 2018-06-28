@@ -4,14 +4,13 @@ import com.sun.net.httpserver.HttpExchange;
 import com.sun.net.httpserver.HttpHandler;
 import core.DataCache;
 import httpHandlers.CommonHandler;
-import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.io.IOException;
+public enum SpecialPawnsHandlers implements HttpHandler {
+	Flag, Trap;
 
-public class TrapHandler implements HttpHandler {
 	@Override
-	public void handle(HttpExchange request) throws IOException {
+	public void handle(HttpExchange request) {
 		try {
 			JSONObject reqJson = CommonHandler.readRequestJson(request);
 
@@ -28,13 +27,14 @@ public class TrapHandler implements HttpHandler {
 
 			JSONObject square = game.getJSONObject("" + row + col);
 			if (square.getString("type").equals("none") && square.getInt("owner") == token) { //not flag & valid owner to position
-				square.put("type", "trap");
+				String pawnName = this.toString().toLowerCase();
+				square.put("type", pawnName); //flag or trap
 				CommonHandler.resSuccess(request);
-				System.out.println("player " + token + " selected trap at " + row + ":" + col);
+				System.out.println("player " + token + " selected " + pawnName + " at " + row + ":" + col);
 			} else {
 				CommonHandler.resError(request, "invalid position");
 			}
-		} catch (JSONException e) {
+		} catch (Exception e) {
 			e.printStackTrace();
 		} finally {
 			request.close();

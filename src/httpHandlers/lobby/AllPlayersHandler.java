@@ -7,18 +7,14 @@ import httpHandlers.CommonHandler;
 import models.User;
 import networking.Network;
 import org.json.JSONArray;
-import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.io.IOException;
-
 /**
- * http handler to user first entering the lobby
- * the handler will response with list of all other users
+ * the handler will response with list of all users (except the sender)
  */
 public class AllPlayersHandler implements HttpHandler {
 	@Override
-	public void handle(HttpExchange request) throws IOException {
+	public void handle(HttpExchange request) {
 		if (request.getRequestMethod().equals("POST")) {
 			try {
 				JSONObject reqJson = CommonHandler.readRequestJson(request);
@@ -37,7 +33,7 @@ public class AllPlayersHandler implements HttpHandler {
 				}
 
 				CommonHandler.resSuccess(request, new JSONObject().put("player_list", arr));
-			} catch (JSONException e) {
+			} catch (Exception e) {
 				e.printStackTrace();
 			} finally {
 				request.close(); //clean up

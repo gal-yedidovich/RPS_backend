@@ -11,7 +11,7 @@ import java.io.IOException;
 
 public class ReadyHandler implements HttpHandler {
 	@Override
-	public void handle(HttpExchange request) throws IOException {
+	public void handle(HttpExchange request) {
 		try {
 			JSONObject reqJson = CommonHandler.readRequestJson(request);
 

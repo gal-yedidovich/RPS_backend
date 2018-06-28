@@ -11,7 +11,7 @@ import java.io.IOException;
 
 public class RandomHandler implements HttpHandler {
 	@Override
-	public void handle(HttpExchange request) throws IOException {
+	public void handle(HttpExchange request) {
 		try {
 			JSONObject reqJson = CommonHandler.readRequestJson(request);
 			int token = reqJson.getInt("token"),
@@ -30,9 +30,8 @@ public class RandomHandler implements HttpHandler {
 
 			CommonHandler.resSuccess(request, rps);
 
-		} catch (JSONException e) {
+		} catch (Exception e) {
 			e.printStackTrace();
-			request.close();
 		} finally {
 			request.close();
 		}

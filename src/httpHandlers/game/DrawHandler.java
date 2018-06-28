@@ -7,14 +7,11 @@ import core.UserManager;
 import httpHandlers.CommonHandler;
 import javafx.util.Pair;
 import networking.Network;
-import org.json.JSONException;
 import org.json.JSONObject;
-
-import java.io.IOException;
 
 public class DrawHandler implements HttpHandler {
 	@Override
-	public void handle(HttpExchange request) throws IOException {
+	public void handle(HttpExchange request) {
 		try {
 			JSONObject reqJson = CommonHandler.readRequestJson(request);
 
@@ -28,27 +25,19 @@ public class DrawHandler implements HttpHandler {
 			JSONObject draw = DataCache.getDraw(gameId);
 			int oppToken = DataCache.getOpponentToken(gameId, token);
 
-			if (draw.length() == 5) { // from , to, 2 decisions & attacker token
+			if (opponentsReady(draw, token, oppToken)) { // from , to, 2 decisions & attacker token
 				//handle draw
 				Pair<Integer, String>[] decisions = new Pair[2];
 
-//                int i = 0;
-//                for (Iterator it = draw.keys(); it.hasNext(); i++) {
-//                    int t = Integer.parseInt(it.next().toString());
-//                    decisions[i] = new Pair<>(t, draw.getString("" + t));
-//                }
 				int senderIndex = draw.getInt("attacker") == token ? 0 : 1;
 				decisions[senderIndex] = new Pair<>(token, decision);
 				decisions[1 - senderIndex] = new Pair<>(oppToken, draw.getString(oppToken + ""));
-
-				//int result = DataCache.resolveBattle(decisions[0].getValue(), decisions[1].getValue());
-
 
 				int result = DataCache.battle(gameId,
 						draw.getJSONObject("from").put("type", decisions[0].getValue()),
 						draw.getJSONObject("to").put("type", decisions[1].getValue()));
 
-				var otherDecision = token == decisions[0].getKey() ? decisions[1] : decisions[0]; //get other decision from array
+				var otherDecision = token == decisions[0].getKey() ? decisions[1] : decisions[0]; //get other decision from array, to return to sender
 				JSONObject resBody = new JSONObject()
 						.put("result", result)
 						.put("opponent", otherDecision.getValue())
@@ -67,10 +56,33 @@ public class DrawHandler implements HttpHandler {
 				Network.Game.unicast(oppToken, new JSONObject().put("msg", UserManager.instance.get(token).getName() + " is ready"));
 			}
 
-		} catch (JSONException e) {
+		} catch (Exception e) {
 			e.printStackTrace();
 		} finally {
 			request.close();
 		}
+	}
+
+	/**
+	 * check whether json object has all necessary elements
+	 * <p>
+	 * the elements required are,
+	 * 'attacker' token
+	 * 'from' object
+	 * 'to' object
+	 * two player tokens
+	 *
+	 * @param draw   json object which we check
+	 * @param token1 first player's token
+	 * @param token2 second player's token
+	 * @return true if all elements are correct, ekse false
+	 */
+	private boolean opponentsReady(JSONObject draw, int token1, int token2) {
+		return draw.length() == 5
+				&& draw.has("attacker")
+				&& draw.has("from")
+				&& draw.has("to")
+				&& draw.has(token1 + "")
+				&& draw.has(token2 + "");
 	}
 }

@@ -25,8 +25,8 @@ public class Main {
 			lobbyHttpServer.start();
 
 			HttpServer gameServer = HttpServer.create(new InetSocketAddress(8004), 100);
-			gameServer.createContext("/game/flag", new FlagHandler());
-			gameServer.createContext("/game/trap", new TrapHandler());
+			gameServer.createContext("/game/flag", SpecialPawnsHandlers.Flag);
+			gameServer.createContext("/game/trap", SpecialPawnsHandlers.Trap);
 			gameServer.createContext("/game/random", new RandomHandler());
 			gameServer.createContext("/game/ready", new ReadyHandler());
 			gameServer.createContext("/game/move", new MoveHandler());

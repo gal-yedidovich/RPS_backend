@@ -21,12 +21,12 @@ public class FlagHandler implements HttpHandler {
 					col = reqJson.getInt("col");
 
 			JSONObject game = DataCache.getGame(gameId);
-			if (game.getInt("player1") == token) {
+			if (game.getInt("player1") == token) { //rotate position on board
 				row = DataCache.BOARD_SIZE - row - 1;
 				col = DataCache.BOARD_SIZE - col - 1;
 			}
 
-			JSONObject square = DataCache.getGame(gameId).getJSONObject("" + row + col);
+			JSONObject square = game.getJSONObject("" + row + col);
 			if (square.getInt("owner") == token) { //valid owner to position
 				square.put("type", "flag");
 				CommonHandler.resSuccess(request);

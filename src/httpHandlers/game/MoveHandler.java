@@ -5,14 +5,11 @@ import com.sun.net.httpserver.HttpHandler;
 import core.DataCache;
 import httpHandlers.CommonHandler;
 import networking.Network;
-import org.json.JSONException;
 import org.json.JSONObject;
-
-import java.io.IOException;
 
 public class MoveHandler implements HttpHandler {
 	@Override
-	public void handle(HttpExchange request) throws IOException {
+	public void handle(HttpExchange request) {
 		try {
 			JSONObject reqJson = CommonHandler.readRequestJson(request);
 			int gameId = reqJson.getInt("gameId");
@@ -27,7 +24,7 @@ public class MoveHandler implements HttpHandler {
 				if (receiverToken != -1) { //if valid token process move
 
 					JSONObject req_to = reqJson.getJSONObject("to"), //request coordinates
-							req_from = reqJson.getJSONObject("from");//request coordinates
+							req_from = reqJson.getJSONObject("from"); //request coordinates
 
 					int from_row = req_from.getInt("row"),
 							from_col = req_from.getInt("col"),
@@ -102,11 +99,6 @@ public class MoveHandler implements HttpHandler {
 			}
 		} catch (Exception e) {
 			e.printStackTrace();
-			try {
-				CommonHandler.resError(request, "error");
-			} catch (JSONException e1) {
-				e1.printStackTrace();
-			}
 		} finally {
 			request.close();
 		}

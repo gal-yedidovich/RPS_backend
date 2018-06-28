@@ -5,14 +5,11 @@ import com.sun.net.httpserver.HttpHandler;
 import core.UserManager;
 import httpHandlers.CommonHandler;
 import networking.Network;
-import org.json.JSONException;
 import org.json.JSONObject;
-
-import java.io.IOException;
 
 public class LogoutHandler implements HttpHandler {
 	@Override
-	public void handle(HttpExchange request) throws IOException {
+	public void handle(HttpExchange request) {
 		if (request.getRequestMethod().equals("POST")) {
 			try {
 				JSONObject reqJson = CommonHandler.readRequestJson(request);
@@ -24,7 +21,7 @@ public class LogoutHandler implements HttpHandler {
 				request.sendResponseHeaders(200, msg.length);
 				request.getResponseBody().write(msg);
 
-			} catch (JSONException e) {
+			} catch (Exception e) {
 				e.printStackTrace();
 			} finally {
 				request.close();

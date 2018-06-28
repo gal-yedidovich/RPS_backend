@@ -6,23 +6,13 @@ import core.UserManager;
 import httpHandlers.CommonHandler;
 import models.User;
 import networking.Network;
-import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.io.IOException;
 import java.util.Random;
 
 public class LoginHandler implements HttpHandler {
 	@Override
-	public void handle(HttpExchange request) throws IOException {
-		if (request.getRequestMethod().equals("GET")) {
-			try {
-				CommonHandler.resSuccess(request);
-			} catch (JSONException e) {
-				e.printStackTrace();
-			}
-		}
-
+	public void handle(HttpExchange request) {
 		if (request.getRequestMethod().equals("POST")) {
 			try {
 				JSONObject json = CommonHandler.readRequestJson(request);
@@ -53,7 +43,7 @@ public class LoginHandler implements HttpHandler {
 
 					Network.Lobby.broadcast(token, json.toString());
 				}
-			} catch (JSONException e) {
+			} catch (Exception e) {
 				e.printStackTrace();
 			} finally {
 				request.close();
