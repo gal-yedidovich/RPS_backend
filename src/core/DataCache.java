@@ -87,7 +87,7 @@ public class DataCache {
 			for (int j = 0; j < BOARD_SIZE; j++) {
 				JSONObject s = game.getJSONObject("" + i + j);
 				String type = s.getString("type");
-				if (!type.equals("flag") && !type.equals("trap")) {
+				if (!type.equalsIgnoreCase("flag") && !type.equalsIgnoreCase("trap")) {
 					rps.add(s);
 					int r = i, c = j; //copy values to avoid ruining loops
 					if (up) { //if up -> rotate position

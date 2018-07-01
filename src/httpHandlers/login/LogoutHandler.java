@@ -16,11 +16,9 @@ public class LogoutHandler implements HttpHandler {
 				int token = reqJson.optInt("token");
 				UserManager.instance.removeUser(token);
 				Network.Lobby.unRegisterClient(token);
+				Network.Game.unRegisterClient(token);
 
-				byte[] msg = new JSONObject().put("msg", "goodbye").toString().getBytes();
-				request.sendResponseHeaders(200, msg.length);
-				request.getResponseBody().write(msg);
-
+				CommonHandler.resSuccess(request, new JSONObject().put("msg", "goodbye"));
 			} catch (Exception e) {
 				e.printStackTrace();
 			} finally {

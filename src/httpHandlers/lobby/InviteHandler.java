@@ -35,32 +35,20 @@ public class InviteHandler implements HttpHandler {
 					Network.Lobby.unicast(targetToken, resJson.toString());
 
 					//response sender
-					byte[] responseData = new JSONObject()
-							.put("game_id", gameNum)
-							.toString()
-							.getBytes();
-					request.sendResponseHeaders(200, responseData.length);
-					request.getResponseBody().write(responseData);
+					CommonHandler.resSuccess(request, new JSONObject().put("game_id", gameNum));
 				} else { //receiver responding to invite
 
 					//pass json to sender
+					reqJson.put("name", UserManager.instance.get(targetToken).getName());
 					Network.Lobby.unicast(senderToken, reqJson.toString());
 
 					//response to http request
-					byte[] responseData = new JSONObject()
-							.put("success", true)
-							.toString()
-							.getBytes();
-
-					request.sendResponseHeaders(200, responseData.length);
-					request.getResponseBody().write(responseData);
+					CommonHandler.resSuccess(request);
 
 					//init Game Server
 					System.out.println("Init game");
 					DataCache.addGame(reqJson.getInt("game_id"), senderToken, targetToken);
 				}
-
-
 			} catch (Exception e) {
 				e.printStackTrace();
 			} finally {

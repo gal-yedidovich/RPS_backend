@@ -35,9 +35,6 @@ public enum Network {
 	}
 
 	public void registerClient(Socket client) {
-		if (this == Game) {
-			;
-		}
 		try {
 			var buffer = new byte[4];
 			client.getInputStream().read(buffer);
@@ -45,6 +42,7 @@ public enum Network {
 			int token = ByteBuffer.wrap(buffer).order(ByteOrder.LITTLE_ENDIAN).getInt();
 			if (UserManager.instance.tokenExists(token)) {
 				clients.put(token, client);
+				System.out.println("socket registered for " + token + " at " + this.toString());
 			}
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -60,8 +58,11 @@ public enum Network {
 				e.printStackTrace();
 			}
 		}
-		clients.remove(token);
-		System.out.println("socket removed from lobby");
+
+		synchronized (this) {
+			clients.remove(token);
+		}
+		System.out.println("socket removed from " + this.toString());
 	}
 
 	public void unicast(int token, String msg) {
@@ -69,11 +70,16 @@ public enum Network {
 			var data = msg.getBytes();
 			var size = data.length;
 			OutputStream out = clients.get(token).getOutputStream();
+			if (size > 1_000_000)
+				System.out.println("big");
+			System.out.println("uni-casting data, size: " + size);
 			out.write(size); //send size
 			out.write(data); //send data
 		} catch (IOException ignored) {
 			System.out.println("error broadcasting to a socket client " + token + "- removing");
-			clients.remove(token);
+			synchronized (this) {
+				clients.remove(token);
+			}
 		}
 	}
 
@@ -82,9 +88,11 @@ public enum Network {
 	}
 
 	public void broadcast(int token, String msg) {
-		for (int t : clients.keySet()) {
-			if (t == token) continue; //skip sender
-			unicast(t, msg);
+		synchronized (this) {
+			for (int t : clients.keySet()) {
+				if (t == token) continue; //skip sender
+				unicast(t, msg);
+			}
 		}
 	}
 }

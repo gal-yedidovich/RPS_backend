@@ -16,8 +16,8 @@ public class CommonHandler {
 		return new JSONObject(new String(buffer));
 	}
 
-	public static void resSuccess(HttpExchange request, JSONObject success) throws IOException {
-		byte[] response = success.toString().getBytes();
+	public static void resSuccess(HttpExchange request, JSONObject success) throws IOException, JSONException {
+		byte[] response = success.put("success", true).toString().getBytes();
 		response(request, response);
 	}
 
