@@ -21,7 +21,7 @@ public class AllPlayersHandler implements HttpHandler {
 				int senderToken = reqJson.getInt("token");
 
 				JSONArray arr = new JSONArray();
-				for (int t : Network.Lobby.GetTokensSet()) { //get users in lobby
+				for (int t : Network.Lobby.getTokensSet()) { //get users in lobby
 					if (t == senderToken) continue; //skip self
 
 					User current = UserManager.instance.get(t);

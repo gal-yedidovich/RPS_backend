@@ -25,7 +25,7 @@ public class DrawHandler implements HttpHandler {
 			JSONObject draw = DataCache.getDraw(gameId);
 			int oppToken = DataCache.getOpponentToken(gameId, token);
 
-			if (opponentsReady(draw, token, oppToken)) { // from , to, 2 decisions & attacker token
+			if (drawReady(draw, token, oppToken)) { // from , to, 2 decisions & attacker token
 				//handle draw
 				Pair<Integer, String>[] decisions = new Pair[2];
 
@@ -53,7 +53,7 @@ public class DrawHandler implements HttpHandler {
 
 			} else {
 				CommonHandler.resSuccess(request, new JSONObject().put("type", "draw"));//response success, to wait
-				Network.Game.unicast(oppToken, new JSONObject().put("msg", UserManager.instance.get(token).getName() + " is ready"));
+				Network.Game.unicast(oppToken, new JSONObject().put("type", "draw").put("msg", UserManager.instance.get(token).getName() + " is ready"));
 			}
 
 		} catch (Exception e) {
@@ -77,7 +77,7 @@ public class DrawHandler implements HttpHandler {
 	 * @param token2 second player's token
 	 * @return true if all elements are correct, ekse false
 	 */
-	private boolean opponentsReady(JSONObject draw, int token1, int token2) {
+	private boolean drawReady(JSONObject draw, int token1, int token2) {
 		return draw.length() == 5
 				&& draw.has("attacker")
 				&& draw.has("from")

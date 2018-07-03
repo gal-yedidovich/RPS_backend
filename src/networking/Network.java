@@ -30,7 +30,7 @@ public enum Network {
 
 	private HashMap<Integer, Socket> clients = new HashMap<>();
 
-	public HashSet<Integer> GetTokensSet() {
+	public HashSet<Integer> getTokensSet() {
 		return new HashSet<>(clients.keySet());
 	}
 
@@ -41,7 +41,9 @@ public enum Network {
 
 			int token = ByteBuffer.wrap(buffer).order(ByteOrder.LITTLE_ENDIAN).getInt();
 			if (UserManager.instance.tokenExists(token)) {
-				clients.put(token, client);
+				synchronized (this) {
+					clients.put(token, client);
+				}
 				System.out.println("socket registered for " + token + " at " + this.toString());
 			}
 		} catch (Exception e) {
@@ -61,6 +63,7 @@ public enum Network {
 
 		synchronized (this) {
 			clients.remove(token);
+			UserManager.instance.removeUser(token);
 		}
 		System.out.println("socket removed from " + this.toString());
 	}
@@ -70,16 +73,12 @@ public enum Network {
 			var data = msg.getBytes();
 			var size = data.length;
 			OutputStream out = clients.get(token).getOutputStream();
-			if (size > 1_000_000)
-				System.out.println("big");
 			System.out.println("uni-casting data, size: " + size);
-			out.write(size); //send size
+			out.write(ByteBuffer.allocate(4).order(ByteOrder.LITTLE_ENDIAN).putInt(size).array()); //send size
 			out.write(data); //send data
 		} catch (IOException ignored) {
 			System.out.println("error broadcasting to a socket client " + token + "- removing");
-			synchronized (this) {
-				clients.remove(token);
-			}
+			unRegisterClient(token);
 		}
 	}
 
@@ -94,5 +93,12 @@ public enum Network {
 				unicast(t, msg);
 			}
 		}
+	}
+
+	public void sendHeartbeat() {
+//		clients.forEach((t, s) -> {
+//
+//		});
+		getTokensSet().forEach(token -> unicast(token, "{\"type\": \"heartbeat\"}"));
 	}
 }

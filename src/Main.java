@@ -59,5 +59,19 @@ public class Main {
 				e.printStackTrace();
 			}
 		}).start();
+
+//		manager thread
+		new Thread(() -> {
+			while (true) {
+				try {
+					Thread.sleep(1000);
+
+					Network.Lobby.sendHeartbeat();
+					Network.Game.sendHeartbeat();
+				} catch (InterruptedException e) {
+					e.printStackTrace();
+				}
+			}
+		}).start();
 	}
 }
