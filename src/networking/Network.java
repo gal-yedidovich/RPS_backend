@@ -41,9 +41,7 @@ public enum Network {
 
 			int token = ByteBuffer.wrap(buffer).order(ByteOrder.LITTLE_ENDIAN).getInt();
 			if (UserManager.instance.tokenExists(token)) {
-				synchronized (this) {
-					clients.put(token, client);
-				}
+				clients.put(token, client);
 				System.out.println("socket registered for " + token + " at " + this.toString());
 			}
 		} catch (Exception e) {
@@ -61,10 +59,8 @@ public enum Network {
 			}
 		}
 
-		synchronized (this) {
-			clients.remove(token);
-			UserManager.instance.removeUser(token);
-		}
+		clients.remove(token);
+		UserManager.instance.removeUser(token);
 		System.out.println("socket removed from " + this.toString());
 	}
 
@@ -87,17 +83,13 @@ public enum Network {
 	}
 
 	public void broadcast(int token, String msg) {
-		synchronized (this) {
-			for (int t : clients.keySet()) {
-				if (t == token) continue; //skip sender
-				unicast(t, msg);
-			}
+		for (int t : getTokensSet()) {
+			if (t == token) continue; //skip sender
+			unicast(t, msg);
 		}
 	}
 
 	public void sendHeartbeat() {
-		synchronized (this) {
-			getTokensSet().forEach(token -> unicast(token, "{\"type\": \"heartbeat\"}"));
-		}
+		getTokensSet().forEach(token -> unicast(token, "{\"type\": \"heartbeat\"}"));
 	}
 }

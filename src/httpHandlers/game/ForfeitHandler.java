@@ -3,11 +3,12 @@ package httpHandlers.game;
 import com.sun.net.httpserver.HttpExchange;
 import com.sun.net.httpserver.HttpHandler;
 import core.DataCache;
+import core.UserManager;
 import httpHandlers.CommonHandler;
 import networking.Network;
 import org.json.JSONObject;
 
-public class QuitGameHandler implements HttpHandler {
+public class ForfeitHandler implements HttpHandler {
 	@Override
 	public void handle(HttpExchange request) {
 		try {
@@ -17,11 +18,12 @@ public class QuitGameHandler implements HttpHandler {
 					gameId = reqJson.getInt("gameId");
 
 			int targetToken = DataCache.getOpponentToken(gameId, senderToken);
-			Network.Game.unicast(targetToken, new JSONObject().put("type", "forfeit"));
+			String name = UserManager.instance.get(senderToken).getName();
+			Network.Game.unicast(targetToken, new JSONObject().put("type", "forfeit").put("name", name));
 			CommonHandler.resSuccess(request);
 		} catch (Exception e) {
 			e.printStackTrace();
-		}finally {
+		} finally {
 			request.close();
 		}
 	}

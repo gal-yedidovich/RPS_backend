@@ -31,8 +31,9 @@ public class Main {
 			gameServer.createContext("/game/ready", new ReadyHandler());
 			gameServer.createContext("/game/move", new MoveHandler());
 			gameServer.createContext("/game/draw", new DrawHandler());
-			gameServer.createContext("/game/draw", new QuitGameHandler());
+			gameServer.createContext("/game/forfeit", new ForfeitHandler());
 			gameServer.start();
+
 
 			System.out.println("HTTP servers running");
 		} catch (IOException e) {
