@@ -30,6 +30,7 @@ public class AllPlayersHandler implements HttpHandler {
 								.put("name", current.getName())
 								.put("token", t)
 						);
+					else UserManager.instance.removeUser(t);
 				}
 
 				CommonHandler.resSuccess(request, new JSONObject().put("player_list", arr));

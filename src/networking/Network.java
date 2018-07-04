@@ -73,11 +73,11 @@ public enum Network {
 			var data = msg.getBytes();
 			var size = data.length;
 			OutputStream out = clients.get(token).getOutputStream();
-			System.out.println("uni-casting data, size: " + size);
 			out.write(ByteBuffer.allocate(4).order(ByteOrder.LITTLE_ENDIAN).putInt(size).array()); //send size
 			out.write(data); //send data
-		} catch (IOException ignored) {
-			System.out.println("error broadcasting to a socket client " + token + "- removing");
+		} catch (Exception e) {
+			System.out.println("error writing to a socket client " + token + "- removing");
+			System.out.println('\t' + e.getMessage());
 			unRegisterClient(token);
 		}
 	}
@@ -96,9 +96,8 @@ public enum Network {
 	}
 
 	public void sendHeartbeat() {
-//		clients.forEach((t, s) -> {
-//
-//		});
-		getTokensSet().forEach(token -> unicast(token, "{\"type\": \"heartbeat\"}"));
+		synchronized (this) {
+			getTokensSet().forEach(token -> unicast(token, "{\"type\": \"heartbeat\"}"));
+		}
 	}
 }
