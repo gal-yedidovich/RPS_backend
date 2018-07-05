@@ -10,20 +10,18 @@ import org.json.JSONObject;
 public class LogoutHandler implements HttpHandler {
 	@Override
 	public void handle(HttpExchange request) {
-		if (request.getRequestMethod().equals("POST")) {
-			try {
-				JSONObject reqJson = CommonHandler.readRequestJson(request);
-				int token = reqJson.optInt("token");
-				UserManager.instance.removeUser(token);
-				Network.Lobby.unRegisterClient(token);
-				Network.Game.unRegisterClient(token);
+		try {
+			JSONObject reqJson = CommonHandler.readRequestJson(request);
+			int token = reqJson.optInt("token");
+			UserManager.instance.removeUser(token);
+			Network.Lobby.unRegisterClient(token);
+			Network.Game.unRegisterClient(token);
 
-				CommonHandler.resSuccess(request, new JSONObject().put("msg", "goodbye"));
-			} catch (Exception e) {
-				e.printStackTrace();
-			} finally {
-				request.close();
-			}
+			CommonHandler.resSuccess(request, new JSONObject().put("msg", "goodbye"));
+		} catch (Exception e) {
+			e.printStackTrace();
+		} finally {
+			request.close();
 		}
 	}
 }

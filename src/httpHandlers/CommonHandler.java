@@ -8,6 +8,8 @@ import java.io.IOException;
 
 public class CommonHandler {
 	public static JSONObject readRequestJson(HttpExchange request) throws IOException, JSONException {
+		if (!request.getRequestMethod().equalsIgnoreCase("POST")) throw new IOException("invalid method, only POST is allowed");
+
 		int contentLength = Integer.parseInt(request.getRequestHeaders().getFirst("Content-Length"));
 
 		byte[] buffer = new byte[contentLength];

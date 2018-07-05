@@ -15,30 +15,28 @@ import org.json.JSONObject;
 public class AllPlayersHandler implements HttpHandler {
 	@Override
 	public void handle(HttpExchange request) {
-		if (request.getRequestMethod().equals("POST")) {
-			try {
-				JSONObject reqJson = CommonHandler.readRequestJson(request);
-				int senderToken = reqJson.getInt("token");
+		try {
+			JSONObject reqJson = CommonHandler.readRequestJson(request);
+			int senderToken = reqJson.getInt("token");
 
-				JSONArray arr = new JSONArray();
-				for (int t : Network.Lobby.getTokensSet()) { //get users in lobby
-					if (t == senderToken) continue; //skip self
+			JSONArray arr = new JSONArray();
+			for (int t : Network.Lobby.getTokensSet()) { //get users in lobby
+				if (t == senderToken) continue; //skip self
 
-					User current = UserManager.instance.get(t);
-					if (current != null)
-						arr.put(new JSONObject()
-								.put("name", current.getName())
-								.put("token", t)
-						);
-					else UserManager.instance.removeUser(t);
-				}
-
-				CommonHandler.resSuccess(request, new JSONObject().put("player_list", arr));
-			} catch (Exception e) {
-				e.printStackTrace();
-			} finally {
-				request.close(); //clean up
+				User current = UserManager.instance.get(t);
+				if (current != null)
+					arr.put(new JSONObject()
+							.put("name", current.getName())
+							.put("token", t)
+					);
+				else UserManager.instance.removeUser(t);
 			}
+
+			CommonHandler.resSuccess(request, new JSONObject().put("player_list", arr));
+		} catch (Exception e) {
+			e.printStackTrace();
+		} finally {
+			request.close(); //clean up
 		}
 	}
 }
