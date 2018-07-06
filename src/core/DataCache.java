@@ -16,7 +16,7 @@ public class DataCache {
 		games.put(gameId + "", game = new JSONObject()
 				.put("player1", token1)
 				.put("player2", token2)
-				.put("turn", token1) //token1 play's first
+				.put("turn", token1) //token1 plays first
 		);
 
 		for (int row = 0; row < BOARD_SIZE; row++) {
@@ -133,41 +133,35 @@ public class DataCache {
 		return result;
 	}
 
-	public static int resolveBattle(String attacker, String target) {
+	private static int resolveBattle(String attacker, String target) {
 		if (attacker.equalsIgnoreCase("flag")
 				|| attacker.equalsIgnoreCase("trap")) throw new RuntimeException("flag/trap cannot attack");
 
-		return Results.instance.possibilities.get(attacker.toLowerCase() + "-" + target.toLowerCase());
+		return battleResults.get(attacker.toLowerCase() + "-" + target.toLowerCase());
 	}
 
-	private enum Results {
-		instance;
-
-		private HashMap<String, Integer> possibilities = new HashMap<>();
-
-		Results() {
-			//flag
-			possibilities.put("rock-flag", 1);
-			possibilities.put("paper-flag", 1);
-			possibilities.put("scissors-flag", 1);
-			//trap
-			possibilities.put("rock-trap", -1);
-			possibilities.put("paper-trap", -1);
-			possibilities.put("scissors-trap", -1);
-			//RPS
-			//draw
-			possibilities.put("rock-rock", 0);
-			possibilities.put("paper-paper", 0);
-			possibilities.put("scissors-scissors", 0);
-			//win
-			possibilities.put("rock-scissors", 1);
-			possibilities.put("paper-rock", 1);
-			possibilities.put("scissors-paper", 1);
-			//lose
-			possibilities.put("rock-paper", -1);
-			possibilities.put("paper-scissors", -1);
-			possibilities.put("scissors-rock", -1);
-
-		}
+	private static final HashMap<String, Integer> battleResults = new HashMap<>(15);
+	static {
+		//flag
+		battleResults.put("rock-flag", 1);
+		battleResults.put("paper-flag", 1);
+		battleResults.put("scissors-flag", 1);
+		//trap
+		battleResults.put("rock-trap", -1);
+		battleResults.put("paper-trap", -1);
+		battleResults.put("scissors-trap", -1);
+		//RPS
+		//draw
+		battleResults.put("rock-rock", 0);
+		battleResults.put("paper-paper", 0);
+		battleResults.put("scissors-scissors", 0);
+		//win
+		battleResults.put("rock-scissors", 1);
+		battleResults.put("paper-rock", 1);
+		battleResults.put("scissors-paper", 1);
+		//lose
+		battleResults.put("rock-paper", -1);
+		battleResults.put("paper-scissors", -1);
+		battleResults.put("scissors-rock", -1);
 	}
 }
