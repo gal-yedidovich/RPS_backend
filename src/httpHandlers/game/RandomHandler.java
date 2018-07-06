@@ -4,10 +4,7 @@ import com.sun.net.httpserver.HttpExchange;
 import com.sun.net.httpserver.HttpHandler;
 import core.DataCache;
 import httpHandlers.CommonHandler;
-import org.json.JSONException;
 import org.json.JSONObject;
-
-import java.io.IOException;
 
 public class RandomHandler implements HttpHandler {
 	@Override

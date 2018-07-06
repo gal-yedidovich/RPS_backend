@@ -7,8 +7,6 @@ import httpHandlers.CommonHandler;
 import networking.Network;
 import org.json.JSONObject;
 
-import java.io.IOException;
-
 public class ReadyHandler implements HttpHandler {
 	@Override
 	public void handle(HttpExchange request) {
