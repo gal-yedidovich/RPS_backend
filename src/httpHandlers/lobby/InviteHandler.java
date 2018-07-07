@@ -31,11 +31,16 @@ public class InviteHandler implements HttpHandler {
 						.put("game_id", gameNum)
 						.put("sender_token", senderToken);
 
-				Network.Lobby.unicast(targetToken, resJson.toString());
+				Network.Lobby.unicast(targetToken, resJson);
 
 				//response sender
 				CommonHandler.resSuccess(request, new JSONObject().put("game_id", gameNum));
 			} else { //receiver responding to invite
+				if (reqJson.optBoolean("accept")) {
+					//init Game Server
+					System.out.println("Init game");
+					DataCache.addGame(reqJson.getInt("game_id"), senderToken, targetToken);
+				}
 
 				//pass json to sender
 				reqJson.put("name", UserManager.instance.get(targetToken).getName());
@@ -43,10 +48,6 @@ public class InviteHandler implements HttpHandler {
 
 				//response to http request
 				CommonHandler.resSuccess(request);
-
-				//init Game Server
-				System.out.println("Init game");
-				DataCache.addGame(reqJson.getInt("game_id"), senderToken, targetToken);
 			}
 		} catch (Exception e) {
 			e.printStackTrace();

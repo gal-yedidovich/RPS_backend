@@ -32,6 +32,7 @@ public class Main {
 			gameServer.createContext("/game/move", new MoveHandler());
 			gameServer.createContext("/game/draw", new DrawHandler());
 			gameServer.createContext("/game/forfeit", new ForfeitHandler());
+			gameServer.createContext("/game/new", new NewGameHandler());
 			gameServer.start();
 
 

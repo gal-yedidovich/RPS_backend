@@ -16,15 +16,15 @@ import java.util.HashSet;
 public enum Network {
 	Lobby {
 		@Override
-		public void unRegisterClient(int token) {
-			super.unRegisterClient(token);
+		public void closeSocket(int token) {
 			//broadcast to lobby
 			try {
 				String msg = new JSONObject().put("type", "user_left").put("token", token).toString();
-				broadcast(-1, msg);
+				broadcast(token, msg);
 			} catch (JSONException e) {
 				e.printStackTrace();
 			}
+			super.closeSocket(token); //continue super function
 		}
 	}, Game;
 
@@ -49,8 +49,12 @@ public enum Network {
 		}
 	}
 
-	public void unRegisterClient(int token) {
-		var s = clients.get(token);
+	/**
+	 * close socket of user token, sed to remove socket when players go to game or back
+	 * @param token key to socket
+	 */
+	public void closeSocket(int token) {
+		var s = clients.remove(token);
 		if (s != null && !s.isClosed()) {
 			try {
 				s.close();
@@ -58,8 +62,15 @@ public enum Network {
 				e.printStackTrace();
 			}
 		}
+	}
 
-		clients.remove(token);
+	/**
+	 * remove user client from server, close the socket then remove token from cache
+	 * @param token key to socket & user
+	 */
+	public void unRegisterClient(int token) {
+		closeSocket(token);
+
 		UserManager.instance.removeUser(token);
 		System.out.println("socket removed from " + this.toString());
 	}

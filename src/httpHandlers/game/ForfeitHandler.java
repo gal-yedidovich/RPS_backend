@@ -21,6 +21,8 @@ public class ForfeitHandler implements HttpHandler {
 			String name = UserManager.instance.get(senderToken).getName();
 			Network.Game.unicast(targetToken, new JSONObject().put("type", "forfeit").put("name", name));
 			CommonHandler.resSuccess(request);
+
+			DataCache.removeGame(gameId);
 		} catch (Exception e) {
 			e.printStackTrace();
 		} finally {

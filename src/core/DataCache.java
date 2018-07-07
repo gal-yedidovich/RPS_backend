@@ -30,6 +30,10 @@ public class DataCache {
 		}
 	}
 
+	public static void removeGame(int gameID) {
+		games.remove(gameID + "");
+	}
+
 	public static JSONObject getDraw(int gameId) throws JSONException {
 		JSONObject game = getGame(gameId),
 				draw = game.optJSONObject("draw");
@@ -141,6 +145,7 @@ public class DataCache {
 	}
 
 	private static final HashMap<String, Integer> battleResults = new HashMap<>(15);
+
 	static {
 		//flag
 		battleResults.put("rock-flag", 1);
