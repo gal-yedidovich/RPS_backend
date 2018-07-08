@@ -29,6 +29,7 @@ public enum Network {
 	}, Game;
 
 	private HashMap<Integer, Socket> clients = new HashMap<>();
+//	private DispatchQueue queue = new DispatchQueue();
 
 	public HashSet<Integer> getTokensSet() {
 		return new HashSet<>(clients.keySet());
@@ -51,6 +52,7 @@ public enum Network {
 
 	/**
 	 * close socket of user token, sed to remove socket when players go to game or back
+	 *
 	 * @param token key to socket
 	 */
 	public void closeSocket(int token) {
@@ -66,6 +68,7 @@ public enum Network {
 
 	/**
 	 * remove user client from server, close the socket then remove token from cache
+	 *
 	 * @param token key to socket & user
 	 */
 	public void unRegisterClient(int token) {
