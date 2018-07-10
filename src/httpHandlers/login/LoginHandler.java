@@ -23,14 +23,6 @@ public class LoginHandler implements HttpHandler {
 					.setName(name)
 					.setToken(token));
 			System.out.println("new client - token " + token + ", " + name);
-
-			//broadcast new user
-			json.remove("req_type");
-			json.put("type", "new_user")
-					.put("name", name)
-					.put("token", token);
-
-			Network.Lobby.broadcast(token, json.toString());
 		} catch (Exception e) {
 			e.printStackTrace();
 		} finally {

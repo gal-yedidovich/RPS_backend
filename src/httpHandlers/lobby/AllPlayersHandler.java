@@ -18,6 +18,7 @@ public class AllPlayersHandler implements HttpHandler {
 		try {
 			JSONObject reqJson = CommonHandler.readRequestJson(request);
 			int senderToken = reqJson.getInt("token");
+			String name = reqJson.getString("name");
 
 			JSONArray arr = new JSONArray();
 			for (int t : Network.Lobby.getTokensSet()) { //get users in lobby
@@ -30,6 +31,13 @@ public class AllPlayersHandler implements HttpHandler {
 							.put("token", t)
 					);
 				else UserManager.instance.removeUser(t);
+
+				//broadcast new user
+				JSONObject json = new JSONObject().put("type", "new_user")
+						.put("name", name)
+						.put("token", senderToken);
+
+				Network.Lobby.broadcast(senderToken, json.toString());
 			}
 
 			CommonHandler.resSuccess(request, new JSONObject().put("player_list", arr));

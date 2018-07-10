@@ -1,6 +1,7 @@
 package networking;
 
 
+import core.DispatchQueue;
 import core.UserManager;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -17,19 +18,19 @@ public enum Network {
 	Lobby {
 		@Override
 		public void closeSocket(int token) {
+			super.closeSocket(token);
 			//broadcast to lobby
 			try {
 				String msg = new JSONObject().put("type", "user_left").put("token", token).toString();
-				broadcast(token, msg);
+				broadcast(-1, msg);
 			} catch (JSONException e) {
 				e.printStackTrace();
 			}
-			super.closeSocket(token); //continue super function
 		}
 	}, Game;
 
 	private HashMap<Integer, Socket> clients = new HashMap<>();
-//	private DispatchQueue queue = new DispatchQueue();
+	private DispatchQueue queue = new DispatchQueue();
 
 	public HashSet<Integer> getTokensSet() {
 		return new HashSet<>(clients.keySet());
@@ -79,17 +80,19 @@ public enum Network {
 	}
 
 	public void unicast(int token, String msg) {
-		try {
-			var data = msg.getBytes();
-			var size = data.length;
-			OutputStream out = clients.get(token).getOutputStream();
-			out.write(ByteBuffer.allocate(4).order(ByteOrder.LITTLE_ENDIAN).putInt(size).array()); //send size
-			out.write(data); //send data
-		} catch (Exception e) {
-			System.out.println("error writing to a socket client " + token + "- removing");
-			System.out.println('\t' + e.getMessage());
-			unRegisterClient(token);
-		}
+		queue.add(() -> {
+			try {
+				var data = msg.getBytes();
+				var size = data.length;
+				OutputStream out = clients.get(token).getOutputStream();
+				out.write(ByteBuffer.allocate(4).order(ByteOrder.LITTLE_ENDIAN).putInt(size).array()); //send size
+				out.write(data); //send data
+			} catch (Exception e) {
+				System.out.println("error writing to a socket client " + token + "- removing");
+				System.out.println('\t' + e.getMessage());
+				closeSocket(token);
+			}
+		});
 	}
 
 	public void unicast(int token, JSONObject json) {
@@ -104,6 +107,6 @@ public enum Network {
 	}
 
 	public void sendHeartbeat() {
-		getTokensSet().forEach(token -> unicast(token, "{\"type\": \"heartbeat\"}"));
+		broadcast(-1, "{\"type\": \"heartbeat\"}");
 	}
 }
