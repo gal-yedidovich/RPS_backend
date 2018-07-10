@@ -10,6 +10,7 @@ import java.util.Random;
 public class DataCache {
 	public static final int BOARD_SIZE = 7;
 	private static final JSONObject games = new JSONObject();
+	private static final HashMap<Integer,Integer> tokensGames = new HashMap<>();
 
 	public static void addGame(int gameId, int token1, int token2) throws JSONException {
 		JSONObject game;
@@ -28,9 +29,16 @@ public class DataCache {
 				);
 			}
 		}
+
+		tokensGames.put(token1, gameId);
+		tokensGames.put(token2, gameId);
 	}
 
-	public static void removeGame(int gameID) {
+	public static void removeGame(int gameID) throws JSONException {
+		JSONObject game = getGame(gameID);
+		tokensGames.remove(game.getInt("player1"));
+		tokensGames.remove(game.getInt("player2"));
+
 		games.remove(gameID + "");
 	}
 
@@ -142,6 +150,10 @@ public class DataCache {
 				|| attacker.equalsIgnoreCase("trap")) throw new RuntimeException("flag/trap cannot attack");
 
 		return battleResults.get(attacker.toLowerCase() + "-" + target.toLowerCase());
+	}
+
+	public static int userInAGame(int token){
+		return tokensGames.get(token);
 	}
 
 	private static final HashMap<String, Integer> battleResults = new HashMap<>(15);

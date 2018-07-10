@@ -1,6 +1,7 @@
 package networking;
 
 
+import core.DataCache;
 import core.DispatchQueue;
 import core.UserManager;
 import org.json.JSONException;
@@ -27,7 +28,22 @@ public enum Network {
 				e.printStackTrace();
 			}
 		}
-	}, Game;
+	}, Game {
+		@Override
+		public void closeSocket(int token) {
+			super.closeSocket(token);
+//			try {
+//				int gameId = DataCache.userInAGame(token);
+//				if (gameId != 0) {
+//					int opponent = DataCache.getOpponentToken(gameId, token);
+//					String name = UserManager.instance.get(token).getName();
+//					unicast(opponent, new JSONObject().put("type", "forfeit").put("name", name));
+//				}
+//			} catch (JSONException e) {
+//				e.printStackTrace();
+//			}
+		}
+	};
 
 	private HashMap<Integer, Socket> clients = new HashMap<>();
 	private DispatchQueue queue = new DispatchQueue();
