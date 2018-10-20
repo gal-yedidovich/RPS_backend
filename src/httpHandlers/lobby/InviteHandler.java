@@ -3,6 +3,7 @@ package httpHandlers.lobby;
 import com.sun.net.httpserver.HttpExchange;
 import com.sun.net.httpserver.HttpHandler;
 import core.DataCache;
+import core.Logger;
 import core.UserManager;
 import httpHandlers.CommonHandler;
 import networking.Network;
@@ -38,7 +39,7 @@ public class InviteHandler implements HttpHandler {
 			} else { //receiver responding to invite
 				if (reqJson.optBoolean("accept")) {
 					//init Game Server
-					System.out.println("Init game");
+					Logger.log("Init game");
 					DataCache.addGame(reqJson.getInt("game_id"), senderToken, targetToken);
 				}
 

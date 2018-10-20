@@ -3,6 +3,7 @@ package httpHandlers.game;
 import com.sun.net.httpserver.HttpExchange;
 import com.sun.net.httpserver.HttpHandler;
 import core.DataCache;
+import core.Logger;
 import core.UserManager;
 import httpHandlers.CommonHandler;
 import javafx.util.Pair;
@@ -19,7 +20,7 @@ public class DrawHandler implements HttpHandler {
 					token = reqJson.getInt("token");
 			String decision = reqJson.getString("decision");
 
-			System.out.println("received data from:\n\t" + reqJson);
+			Logger.log("received data from:\n\t" + reqJson);
 
 			DataCache.putDrawDecision(gameId, token, decision);
 			JSONObject draw = DataCache.getDraw(gameId);

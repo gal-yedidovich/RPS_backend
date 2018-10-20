@@ -3,6 +3,7 @@ package networking;
 
 import core.DataCache;
 import core.DispatchQueue;
+import core.Logger;
 import core.UserManager;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -60,7 +61,7 @@ public enum Network {
 			int token = ByteBuffer.wrap(buffer).order(ByteOrder.LITTLE_ENDIAN).getInt();
 			if (UserManager.instance.tokenExists(token)) {
 				clients.put(token, client);
-				System.out.println("socket registered for " + token + " at " + this.toString());
+				Logger.log("socket registered for " + token + " at " + this.toString());
 			}
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -92,7 +93,7 @@ public enum Network {
 		closeSocket(token);
 
 		UserManager.instance.removeUser(token);
-		System.out.println("socket removed from " + this.toString());
+		Logger.log("socket removed from " + this.toString());
 	}
 
 	public void unicast(int token, String msg) {
@@ -104,8 +105,8 @@ public enum Network {
 				out.write(ByteBuffer.allocate(4).order(ByteOrder.LITTLE_ENDIAN).putInt(size).array()); //send size
 				out.write(data); //send data
 			} catch (Exception e) {
-				System.out.println("error writing to a socket client " + token + "- removing");
-				System.out.println('\t' + e.getMessage());
+				Logger.log("error writing to a socket client " + token + " - removing");
+				Logger.log('\t' + e.getMessage());
 				closeSocket(token);
 			}
 		});
@@ -126,3 +127,4 @@ public enum Network {
 		broadcast(-1, "{\"type\": \"heartbeat\"}");
 	}
 }
+

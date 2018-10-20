@@ -1,4 +1,6 @@
 import com.sun.net.httpserver.HttpServer;
+import core.Logger;
+import httpHandlers.LoggerHandler;
 import httpHandlers.game.*;
 import httpHandlers.lobby.AllPlayersHandler;
 import httpHandlers.lobby.ChatHandler;
@@ -13,30 +15,33 @@ import java.net.ServerSocket;
 
 public class Main {
 	public static void main(String[] args) {
+		Logger.log("----------------------Server Starts------------------------------");
 		//start HTTP servers
 		try {
 			var lobbyHttpServer = HttpServer.create(new InetSocketAddress(8003), 100);
 
 			lobbyHttpServer.createContext("/login", new LoginHandler());
 			lobbyHttpServer.createContext("/logout", new LogoutHandler());
+			lobbyHttpServer.createContext("/logs", new LoggerHandler()); //development only
+
 			lobbyHttpServer.createContext("/lobby/players", new AllPlayersHandler());
 			lobbyHttpServer.createContext("/lobby/chat", new ChatHandler());
 			lobbyHttpServer.createContext("/lobby/invite", new InviteHandler());
 			lobbyHttpServer.start();
 
-			HttpServer gameServer = HttpServer.create(new InetSocketAddress(8004), 100);
-			gameServer.createContext("/game/flag", SpecialPawnsHandlers.Flag);
-			gameServer.createContext("/game/trap", SpecialPawnsHandlers.Trap);
-			gameServer.createContext("/game/random", new RandomHandler());
-			gameServer.createContext("/game/ready", new ReadyHandler());
-			gameServer.createContext("/game/move", new MoveHandler());
-			gameServer.createContext("/game/draw", new DrawHandler());
-			gameServer.createContext("/game/forfeit", new ForfeitHandler());
-			gameServer.createContext("/game/new", new NewGameHandler());
-			gameServer.start();
+			HttpServer gameHttpServer = HttpServer.create(new InetSocketAddress(8004), 100);
+			gameHttpServer.createContext("/game/flag", SpecialPawnsHandlers.Flag);
+			gameHttpServer.createContext("/game/trap", SpecialPawnsHandlers.Trap);
+			gameHttpServer.createContext("/game/random", new RandomHandler());
+			gameHttpServer.createContext("/game/ready", new ReadyHandler());
+			gameHttpServer.createContext("/game/move", new MoveHandler());
+			gameHttpServer.createContext("/game/draw", new DrawHandler());
+			gameHttpServer.createContext("/game/forfeit", new ForfeitHandler());
+			gameHttpServer.createContext("/game/new", new NewGameHandler());
+			gameHttpServer.start();
 
 
-			System.out.println("HTTP servers running");
+			Logger.log("HTTP servers running");
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
@@ -45,7 +50,7 @@ public class Main {
 		new Thread(() -> {
 			try {
 				ServerSocket lobbyServer = new ServerSocket(15001);
-				System.out.println("Lobby socket running");
+				Logger.log("Lobby socket running");
 				while (true) Network.Lobby.registerClient(lobbyServer.accept());
 			} catch (IOException e) {
 				e.printStackTrace();
@@ -56,7 +61,7 @@ public class Main {
 		new Thread(() -> {
 			try {
 				ServerSocket gameServer = new ServerSocket(15002);
-				System.out.println("Game socket running");
+				Logger.log("Game socket running");
 				while (true) Network.Game.registerClient(gameServer.accept());
 			} catch (IOException e) {
 				e.printStackTrace();

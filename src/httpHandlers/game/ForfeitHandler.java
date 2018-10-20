@@ -3,6 +3,7 @@ package httpHandlers.game;
 import com.sun.net.httpserver.HttpExchange;
 import com.sun.net.httpserver.HttpHandler;
 import core.DataCache;
+import core.Logger;
 import core.UserManager;
 import httpHandlers.CommonHandler;
 import networking.Network;
@@ -21,6 +22,7 @@ public class ForfeitHandler implements HttpHandler {
 			String name = UserManager.instance.get(senderToken).getName();
 			Network.Game.unicast(targetToken, new JSONObject().put("type", "forfeit").put("name", name));
 			CommonHandler.resSuccess(request);
+			Logger.log(name + ", " + senderToken + " has forfeited game " + gameId);
 
 			DataCache.removeGame(gameId);
 		} catch (Exception e) {

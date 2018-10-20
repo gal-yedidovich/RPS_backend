@@ -3,6 +3,8 @@ package httpHandlers.game;
 import com.sun.net.httpserver.HttpExchange;
 import com.sun.net.httpserver.HttpHandler;
 import core.DataCache;
+import core.Logger;
+import core.UserManager;
 import httpHandlers.CommonHandler;
 import networking.Network;
 import org.json.JSONObject;
@@ -14,7 +16,8 @@ public class MoveHandler implements HttpHandler {
 			JSONObject reqJson = CommonHandler.readRequestJson(request);
 			int gameId = reqJson.getInt("gameId");
 			int token = reqJson.getInt("token");
-			System.out.println(token + " has moved\n\t" + reqJson);
+			String name = UserManager.instance.get(token).getName();
+			Logger.log(token + ", " + name + " has moved\n\t" + reqJson);
 
 			JSONObject gameJson = DataCache.getGame(gameId);
 
@@ -46,7 +49,7 @@ public class MoveHandler implements HttpHandler {
 
 					JSONObject responseBody = new JSONObject().put("success", true);
 					if (targetOwner == token) {
-						System.out.println(targetOwner + " - " + token);
+						Logger.log(targetOwner + " - " + token);
 						throw new RuntimeException("invalid target, can't move on to own RPS");
 					} else if (targetOwner == -1) { //empty -> move
 						DataCache.move(from, to);
@@ -59,7 +62,7 @@ public class MoveHandler implements HttpHandler {
 							responseBody.put("winner", winner);
 							reqJson.put("winner", winner);
 							gameJson.put("turn", -1); //no more turns
-							System.out.println("game over, " + winner + " won");
+							Logger.log("game over, " + winner + " won");
 						} else {
 							gameJson.put("turn", receiverToken); //toggle move
 						}
@@ -89,12 +92,12 @@ public class MoveHandler implements HttpHandler {
 
 
 				} else { //invalid token, return with error response
-					System.out.println("error - invalid token at game: " + gameId);
+					Logger.log("error - invalid token at game: " + gameId);
 					CommonHandler.resError(request, "invalid request");
 				}
 			} else {
 				//not player's turn
-				System.out.println("error - token move not at their turn at game: " + gameId);
+				Logger.log("error - token move not at their turn at game: " + gameId);
 				CommonHandler.resError(request, "not your turn");
 			}
 		} catch (Exception e) {
